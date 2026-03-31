@@ -7,7 +7,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; background: #f4f6f9; color: #222; font-size: 14px; }
-  .page-wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+  .page-wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 60px; }
 
   .page-header { background: #1e3a6e; color: #fff; border-radius: 10px; padding: 20px 24px; margin-bottom: 24px; }
   .page-header .logo { font-size: 11px; opacity: 0.7; margin-bottom: 4px; letter-spacing: 1px; }
@@ -21,23 +21,31 @@
 
   .section { background: #fff; border-radius: 10px; border: 1px solid #dde1e9; margin-bottom: 14px; overflow: hidden; }
   .section-header { background: #1e3a6e; color: #fff; padding: 11px 18px; font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
-  .section-header .toggle { font-size: 12px; transition: transform 0.2s; display: inline-block; }
+  .section-header .toggle { font-size: 12px; display: inline-block; transition: transform 0.2s; }
   .section-header.closed .toggle { transform: rotate(-90deg); }
   .section-body.hidden { display: none; }
 
-  .col-headers { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr 1fr; gap: 6px; padding: 8px 18px; background: #f0f3f8; border-bottom: 1px solid #dde1e9; }
-  .col-h { font-size: 11px; color: #666; text-align: right; font-weight: 600; }
+  /* 6列グリッド: ラベル / 1回目 / 2回目 / 3回目 / 改善額①/ 改善額② */
+  .col-headers { display: grid; grid-template-columns: 2fr 0.8fr 0.8fr 0.8fr 0.9fr 0.9fr; gap: 4px; padding: 8px 18px; background: #f0f3f8; border-bottom: 1px solid #dde1e9; }
+  .col-h { font-size: 10px; color: #666; text-align: right; font-weight: 600; line-height: 1.3; }
   .col-h:first-child { text-align: left; }
-  .col-h.improved { color: #0f6e56; }
+  .col-h.kaizen { color: #0f6e56; }
 
-  .item-row { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr 1fr; gap: 6px; padding: 7px 18px; border-bottom: 1px solid #eef0f5; align-items: center; }
-  .item-row label { font-size: 12px; color: #333; line-height: 1.4; }
+  .item-row { display: grid; grid-template-columns: 2fr 0.8fr 0.8fr 0.8fr 0.9fr 0.9fr; gap: 4px; padding: 6px 18px; border-bottom: 1px solid #eef0f5; align-items: center; }
+  .item-row label { font-size: 11px; color: #333; line-height: 1.4; }
   .item-row input[type="number"] {
-    width: 100%; border: 1px solid #cdd2db; border-radius: 5px; padding: 5px 8px;
-    font-size: 12px; text-align: right; background: #fff; color: #222; height: 30px;
+    width: 100%; border: 1px solid #cdd2db; border-radius: 5px; padding: 4px 6px;
+    font-size: 11px; text-align: right; background: #fff; color: #222; height: 28px;
   }
   .item-row input[type="number"]:focus { outline: none; border-color: #1e3a6e; }
-  .item-row input.improved { border-color: #0f6e56; }
+  .item-row .kaizen-val {
+    font-size: 11px; text-align: right; padding: 4px 6px; height: 28px;
+    display: flex; align-items: center; justify-content: flex-end;
+    border-radius: 5px; font-weight: 600;
+  }
+  .kaizen-val.down { color: #0f6e56; background: #eaf3de; }
+  .kaizen-val.up   { color: #c0392b; background: #fdecea; }
+  .kaizen-val.zero { color: #888;    background: #f5f5f5; }
 
   .note-row { padding: 8px 18px 12px; }
   .note-row textarea {
@@ -46,16 +54,14 @@
     min-height: 38px; font-family: inherit;
   }
 
+  /* 合計カード */
   .totals-card { background: #fff; border-radius: 10px; border: 1px solid #dde1e9; padding: 20px 24px; margin-top: 6px; }
-  .totals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-  .total-cell { background: #f0f3f8; border-radius: 8px; padding: 12px; text-align: center; }
-  .total-cell .t-label { font-size: 11px; color: #666; margin-bottom: 4px; }
-  .total-cell .t-val { font-size: 20px; font-weight: 600; color: #1e3a6e; }
-  .total-cell.improved .t-val { color: #0f6e56; }
-  .saving-row { display: flex; justify-content: space-between; align-items: center; background: #f0f3f8; border-radius: 8px; padding: 14px 18px; }
-  .saving-left .s-label { font-size: 12px; color: #666; }
-  .saving-left .s-val { font-size: 22px; font-weight: 700; color: #0f6e56; margin-top: 2px; }
-  .saving-right .s-pct { font-size: 13px; color: #666; }
+  .totals-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 14px; }
+  .total-cell { background: #f0f3f8; border-radius: 8px; padding: 10px; text-align: center; }
+  .total-cell .t-label { font-size: 10px; color: #666; margin-bottom: 4px; line-height: 1.3; }
+  .total-cell .t-val { font-size: 16px; font-weight: 700; color: #1e3a6e; }
+  .total-cell.kaizen .t-val { color: #0f6e56; }
+  .total-cell.kaizen-up .t-val { color: #c0392b; }
 
   .submit-area { margin-top: 20px; text-align: center; }
   .submit-area p { font-size: 12px; color: #888; margin-bottom: 10px; }
@@ -67,9 +73,7 @@
   .btn-submit:hover { background: #162d56; }
   .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
 
-  /* 送信完了エリア */
   .result-area { display: none; margin-top: 24px; background: #fff; border-radius: 10px; border: 1px solid #dde1e9; padding: 24px; text-align: center; }
-  .result-area .success-icon { font-size: 40px; margin-bottom: 10px; }
   .result-area .success-msg { font-size: 16px; font-weight: 600; color: #0f6e56; margin-bottom: 6px; }
   .result-area .success-sub { font-size: 12px; color: #888; margin-bottom: 20px; }
   .btn-download {
@@ -80,37 +84,35 @@
   .btn-download:hover { background: #0a5240; }
   .msg-error { margin-top: 14px; color: #c0392b; font-size: 13px; display: none; }
 
-  /* JPEG用サマリー（画面外に描画） */
+  /* JPEG用サマリー */
   #summary-canvas {
-    position: fixed; left: -9999px; top: 0;
-    width: 800px; background: #fff; padding: 40px;
+    position: fixed; left: -9999px; top: 0; display: none;
+    width: 900px; background: #fff; padding: 40px;
     font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
   }
-  #summary-canvas .sc-header { background: #1e3a6e; color: #fff; padding: 20px 24px; border-radius: 8px; margin-bottom: 24px; }
+  #summary-canvas .sc-header { background: #1e3a6e; color: #fff; padding: 20px 24px; border-radius: 8px; margin-bottom: 20px; }
   #summary-canvas .sc-header .sc-logo { font-size: 11px; opacity: 0.7; margin-bottom: 4px; }
   #summary-canvas .sc-header h2 { font-size: 18px; font-weight: 600; }
   #summary-canvas .sc-header .sc-company { font-size: 13px; opacity: 0.9; margin-top: 4px; }
   #summary-canvas .sc-header .sc-date { font-size: 11px; opacity: 0.7; margin-top: 2px; }
-  #summary-canvas table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 12px; }
-  #summary-canvas table th { background: #1e3a6e; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
-  #summary-canvas table th.r { text-align: right; }
-  #summary-canvas table td { padding: 6px 10px; border-bottom: 1px solid #eef0f5; }
-  #summary-canvas table td.r { text-align: right; }
-  #summary-canvas table tr.sec-header td { background: #f0f3f8; font-weight: 600; color: #1e3a6e; }
-  #summary-canvas .sc-totals { display: flex; gap: 12px; margin-bottom: 16px; }
+  #summary-canvas .sc-totals { display: flex; gap: 10px; margin-bottom: 16px; }
   #summary-canvas .sc-total-cell { flex: 1; background: #f0f3f8; border-radius: 8px; padding: 12px; text-align: center; }
-  #summary-canvas .sc-total-cell .tl { font-size: 11px; color: #666; margin-bottom: 4px; }
-  #summary-canvas .sc-total-cell .tv { font-size: 18px; font-weight: 700; color: #1e3a6e; }
-  #summary-canvas .sc-total-cell.imp .tv { color: #0f6e56; }
-  #summary-canvas .sc-saving { background: #f0f3f8; border-radius: 8px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
-  #summary-canvas .sc-saving .sl { font-size: 12px; color: #666; }
-  #summary-canvas .sc-saving .sv { font-size: 20px; font-weight: 700; color: #0f6e56; }
-  #summary-canvas .sc-saving .sp { font-size: 13px; color: #666; }
+  #summary-canvas .sc-total-cell .tl { font-size: 10px; color: #666; margin-bottom: 4px; line-height: 1.3; }
+  #summary-canvas .sc-total-cell .tv { font-size: 16px; font-weight: 700; color: #1e3a6e; }
+  #summary-canvas .sc-total-cell.k .tv { color: #0f6e56; }
+  #summary-canvas table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  #summary-canvas table th { background: #1e3a6e; color: #fff; padding: 7px 8px; text-align: right; font-weight: 600; }
+  #summary-canvas table th:first-child { text-align: left; }
+  #summary-canvas table td { padding: 5px 8px; border-bottom: 1px solid #eef0f5; text-align: right; }
+  #summary-canvas table td:first-child { text-align: left; }
+  #summary-canvas table tr.sec-hd td { background: #f0f3f8; font-weight: 600; color: #1e3a6e; text-align: left; }
+  #summary-canvas table td.kd { color: #0f6e56; font-weight: 600; }
+  #summary-canvas table td.ku { color: #c0392b; font-weight: 600; }
   #summary-canvas .sc-footer { margin-top: 20px; font-size: 11px; color: #aaa; text-align: center; }
 
-  @media (max-width: 600px) {
-    .col-headers, .item-row { grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; font-size: 11px; padding: 6px 10px; }
-    .totals-grid { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 640px) {
+    .col-headers, .item-row { grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr; font-size: 10px; padding: 5px 10px; }
+    .totals-grid { grid-template-columns: repeat(3, 1fr); }
   }
 </style>
 </head>
@@ -120,7 +122,7 @@
   <div class="page-header">
     <div class="logo">TOHOKU COPY SALE</div>
     <h1>ランニングコスト診断チェックリスト</h1>
-    <p>各項目に金額を入力し、最後に「スプレッドシートに送信」ボタンを押してください。</p>
+    <p>各項目に金額を入力してください。改善額は自動で計算されます。</p>
   </div>
 
   <div class="company-field">
@@ -132,19 +134,11 @@
 
   <div class="totals-card">
     <div class="totals-grid">
-      <div class="total-cell"><div class="t-label">初年度 合計</div><div class="t-val" id="tot0">¥0</div></div>
-      <div class="total-cell"><div class="t-label">2年目 合計</div><div class="t-val" id="tot1">¥0</div></div>
-      <div class="total-cell"><div class="t-label">3年目 合計</div><div class="t-val" id="tot2">¥0</div></div>
-      <div class="total-cell improved"><div class="t-label">改善後 合計</div><div class="t-val" id="tot3">¥0</div></div>
-    </div>
-    <div class="saving-row">
-      <div class="saving-left">
-        <div class="s-label">削減額（初年度 → 改善後）</div>
-        <div class="s-val" id="saving">¥0</div>
-      </div>
-      <div class="saving-right">
-        <div class="s-pct" id="saving-pct">削減率 —</div>
-      </div>
+      <div class="total-cell"><div class="t-label">1回目 合計</div><div class="t-val" id="tot0">¥0</div></div>
+      <div class="total-cell"><div class="t-label">2回目 合計</div><div class="t-val" id="tot1">¥0</div></div>
+      <div class="total-cell"><div class="t-label">3回目 合計</div><div class="t-val" id="tot2">¥0</div></div>
+      <div class="total-cell kaizen"><div class="t-label">改善額①<br>1回目→2回目</div><div class="t-val" id="tot3">¥0</div></div>
+      <div class="total-cell kaizen"><div class="t-label">改善額②<br>2回目→3回目</div><div class="t-val" id="tot4">¥0</div></div>
     </div>
   </div>
 
@@ -154,17 +148,14 @@
     <div class="msg-error" id="msgError"></div>
   </div>
 
-  <!-- 送信完了 -->
   <div class="result-area" id="resultArea">
-    <div class="success-icon">✅</div>
-    <div class="success-msg">送信が完了しました！</div>
+    <div class="success-msg">✅ 送信が完了しました！</div>
     <div class="success-sub">下のボタンからお客様控えをダウンロードできます。</div>
     <button class="btn-download" onclick="downloadJpeg()">📥 お客様控えをダウンロード（JPEG）</button>
   </div>
 
 </div>
 
-<!-- JPEG描画用（画面外） -->
 <div id="summary-canvas"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -182,7 +173,7 @@ const SECTIONS = [
   { name: "その他",   items: ["配送料・運送費","倉庫保管料","梱包材費","保険関連"] },
   { name: "消耗品",   items: ["名刺","封筒","事務用品全般"] }
 ];
-const COLS = ["初年度","2年目","3年目","改善後"];
+const INPUT_COLS = ["1回目","2回目","3回目"];
 
 // セクション生成
 const container = document.getElementById("sections");
@@ -190,12 +181,14 @@ SECTIONS.forEach((sec, si) => {
   const div = document.createElement("div");
   div.className = "section";
   const rowsHtml = sec.items.map((item, ri) =>
-    `<div class="item-row">
+    `<div class="item-row" id="row_${si}_${ri}">
       <label>${item}</label>
-      ${COLS.map((col, ci) =>
+      ${INPUT_COLS.map((col, ci) =>
         `<input type="number" id="inp_${si}_${ri}_${ci}" min="0" step="100"
-          placeholder="0" class="${ci===3?'improved':''}" oninput="recalc()" />`
+          placeholder="0" oninput="recalc()" />`
       ).join("")}
+      <div class="kaizen-val zero" id="k1_${si}_${ri}">—</div>
+      <div class="kaizen-val zero" id="k2_${si}_${ri}">—</div>
     </div>`
   ).join("");
   div.innerHTML = `
@@ -205,7 +198,11 @@ SECTIONS.forEach((sec, si) => {
     <div class="section-body">
       <div class="col-headers">
         <div class="col-h">項目</div>
-        ${COLS.map((c,i)=>`<div class="col-h${i===3?' improved':''}">${c}</div>`).join("")}
+        <div class="col-h">1回目</div>
+        <div class="col-h">2回目</div>
+        <div class="col-h">3回目</div>
+        <div class="col-h kaizen">改善額①<br>1→2回目</div>
+        <div class="col-h kaizen">改善額②<br>2→3回目</div>
       </div>
       ${rowsHtml}
       <div class="note-row"><textarea id="note_${si}" placeholder="備考"></textarea></div>
@@ -218,45 +215,77 @@ function toggleSec(header) {
   header.classList.toggle("closed");
 }
 
-function fmt(n) { return "¥" + Math.round(n).toLocaleString("ja-JP"); }
+function fmt(n) { return "¥" + Math.round(Math.abs(n)).toLocaleString("ja-JP"); }
+
+function fmtDiff(d, el) {
+  if (d === 0) {
+    el.textContent = "—";
+    el.className = "kaizen-val zero";
+  } else if (d > 0) {
+    el.textContent = "▼ " + fmt(d);
+    el.className = "kaizen-val down";
+  } else {
+    el.textContent = "▲ " + fmt(d);
+    el.className = "kaizen-val up";
+  }
+}
 
 function recalc() {
-  const t = [0,0,0,0];
-  SECTIONS.forEach((_, si) => {
-    SECTIONS[si].items.forEach((__, ri) => {
-      COLS.forEach((_, ci) => {
-        t[ci] += parseFloat(document.getElementById(`inp_${si}_${ri}_${ci}`)?.value) || 0;
-      });
+  const totals = [0, 0, 0];
+  SECTIONS.forEach((sec, si) => {
+    sec.items.forEach((_, ri) => {
+      const v = INPUT_COLS.map((_, ci) =>
+        parseFloat(document.getElementById(`inp_${si}_${ri}_${ci}`)?.value) || 0
+      );
+      totals[0] += v[0];
+      totals[1] += v[1];
+      totals[2] += v[2];
+
+      const d1 = v[0] - v[1];
+      const d2 = v[1] - v[2];
+      fmtDiff(d1, document.getElementById(`k1_${si}_${ri}`));
+      fmtDiff(d2, document.getElementById(`k2_${si}_${ri}`));
     });
   });
-  for(let i=0;i<4;i++) document.getElementById(`tot${i}`).textContent = fmt(t[i]);
-  const diff = t[0] - t[3];
-  document.getElementById("saving").textContent = fmt(Math.abs(diff));
-  document.getElementById("saving-pct").textContent =
-    "削減率 " + (t[0] > 0 ? (diff / t[0] * 100).toFixed(1) : "0.0") + "%";
+
+  for(let i=0;i<3;i++) document.getElementById(`tot${i}`).textContent = fmt(totals[i]);
+  const diff1 = totals[0] - totals[1];
+  const diff2 = totals[1] - totals[2];
+
+  const t3 = document.getElementById("tot3");
+  const t4 = document.getElementById("tot4");
+  t3.textContent = (diff1 >= 0 ? "▼ " : "▲ ") + fmt(diff1);
+  t3.style.color = diff1 >= 0 ? "#0f6e56" : "#c0392b";
+  t4.textContent = (diff2 >= 0 ? "▼ " : "▲ ") + fmt(diff2);
+  t4.style.color = diff2 >= 0 ? "#0f6e56" : "#c0392b";
 }
 
 function collectData() {
   const sections = {};
-  const totals = {};
+  const totals = [0, 0, 0];
   SECTIONS.forEach((sec, si) => {
     sections[sec.name] = {};
     sec.items.forEach((item, ri) => {
       sections[sec.name][item] = {};
-      COLS.forEach((col, ci) => {
-        sections[sec.name][item][col] = parseFloat(document.getElementById(`inp_${si}_${ri}_${ci}`)?.value) || 0;
+      INPUT_COLS.forEach((col, ci) => {
+        const v = parseFloat(document.getElementById(`inp_${si}_${ri}_${ci}`)?.value) || 0;
+        sections[sec.name][item][col] = v;
+        totals[ci] += v;
       });
     });
     sections[sec.name]["備考"] = document.getElementById(`note_${si}`)?.value || "";
   });
-  let t = [0,0,0,0];
-  SECTIONS.forEach((sec) => {
-    sec.items.forEach((item) => {
-      COLS.forEach((col, ci) => { t[ci] += sections[sec.name][item][col]; });
-    });
-  });
-  COLS.forEach((col, ci) => totals[col] = t[ci]);
-  return { companyName: document.getElementById("companyName").value.trim(), sections, totals };
+  return {
+    companyName: document.getElementById("companyName").value.trim(),
+    sections,
+    totals: {
+      "1回目": totals[0],
+      "2回目": totals[1],
+      "3回目": totals[2],
+      "改善額①(1→2回目)": totals[0] - totals[1],
+      "改善額②(2→3回目)": totals[1] - totals[2]
+    }
+  };
 }
 
 let lastPayload = null;
@@ -266,7 +295,6 @@ function submitData() {
   lastPayload = payload;
   const btn = document.getElementById("submitBtn");
   const msgErr = document.getElementById("msgError");
-
   btn.disabled = true;
   btn.textContent = "送信中...";
   msgErr.style.display = "none";
@@ -279,8 +307,9 @@ function submitData() {
   })
   .then(() => {
     btn.textContent = "送信完了";
-    document.getElementById("resultArea").style.display = "block";
-    document.getElementById("resultArea").scrollIntoView({ behavior: "smooth" });
+    const r = document.getElementById("resultArea");
+    r.style.display = "block";
+    r.scrollIntoView({ behavior: "smooth" });
   })
   .catch(err => {
     msgErr.textContent = "送信できませんでした: " + err.message;
@@ -290,30 +319,34 @@ function submitData() {
   });
 }
 
-// JPEG生成・ダウンロード
 function downloadJpeg() {
   if (!lastPayload) return;
   const p = lastPayload;
-  const now = new Date().toLocaleString("ja-JP");
   const t = p.totals;
-  const diff = (t["初年度"] || 0) - (t["改善後"] || 0);
-  const pct = t["初年度"] > 0 ? (diff / t["初年度"] * 100).toFixed(1) : "0.0";
+  const now = new Date().toLocaleString("ja-JP");
+  const d1 = t["改善額①(1→2回目)"];
+  const d2 = t["改善額②(2→3回目)"];
 
-  // 明細テーブルHTML生成
   let tableRows = "";
   SECTIONS.forEach(sec => {
-    tableRows += `<tr class="sec-header"><td colspan="5">${sec.name}</td></tr>`;
+    tableRows += `<tr class="sec-hd"><td colspan="6">${sec.name}</td></tr>`;
     sec.items.forEach(item => {
       const d = p.sections[sec.name]?.[item] || {};
-      const hasVal = COLS.some(c => d[c] > 0);
-      if (!hasVal) return;
+      const v = INPUT_COLS.map(c => d[c] || 0);
+      if (!v.some(x => x > 0)) return;
+      const diff1 = v[0] - v[1];
+      const diff2 = v[1] - v[2];
+      const cls1 = diff1 > 0 ? "kd" : diff1 < 0 ? "ku" : "";
+      const cls2 = diff2 > 0 ? "kd" : diff2 < 0 ? "ku" : "";
       tableRows += `<tr>
-        <td style="padding-left:16px;">${item}</td>
-        ${COLS.map(c => `<td class="r">${d[c] > 0 ? fmt(d[c]) : "—"}</td>`).join("")}
+        <td style="padding-left:14px;">${item}</td>
+        ${v.map(x => `<td>${x > 0 ? fmt(x) : "—"}</td>`).join("")}
+        <td class="${cls1}">${diff1 !== 0 ? (diff1>0?"▼ ":"▲ ")+fmt(diff1) : "—"}</td>
+        <td class="${cls2}">${diff2 !== 0 ? (diff2>0?"▼ ":"▲ ")+fmt(diff2) : "—"}</td>
       </tr>`;
     });
     const note = p.sections[sec.name]?.["備考"];
-    if (note) tableRows += `<tr><td colspan="5" style="font-size:11px;color:#888;padding-left:16px;">備考：${note}</td></tr>`;
+    if (note) tableRows += `<tr><td colspan="6" style="font-size:10px;color:#888;padding-left:14px;">備考：${note}</td></tr>`;
   });
 
   document.getElementById("summary-canvas").innerHTML = `
@@ -323,40 +356,31 @@ function downloadJpeg() {
       <div class="sc-company">${p.companyName || "（会社名未入力）"}</div>
       <div class="sc-date">送信日時：${now}</div>
     </div>
-
     <div class="sc-totals">
-      <div class="sc-total-cell"><div class="tl">初年度</div><div class="tv">${fmt(t["初年度"]||0)}</div></div>
-      <div class="sc-total-cell"><div class="tl">2年目</div><div class="tv">${fmt(t["2年目"]||0)}</div></div>
-      <div class="sc-total-cell"><div class="tl">3年目</div><div class="tv">${fmt(t["3年目"]||0)}</div></div>
-      <div class="sc-total-cell imp"><div class="tl">改善後</div><div class="tv">${fmt(t["改善後"]||0)}</div></div>
+      <div class="sc-total-cell"><div class="tl">1回目</div><div class="tv">${fmt(t["1回目"])}</div></div>
+      <div class="sc-total-cell"><div class="tl">2回目</div><div class="tv">${fmt(t["2回目"])}</div></div>
+      <div class="sc-total-cell"><div class="tl">3回目</div><div class="tv">${fmt(t["3回目"])}</div></div>
+      <div class="sc-total-cell k"><div class="tl">改善額①<br>1→2回目</div><div class="tv">${(d1>=0?"▼ ":"▲ ")+fmt(d1)}</div></div>
+      <div class="sc-total-cell k"><div class="tl">改善額②<br>2→3回目</div><div class="tv">${(d2>=0?"▼ ":"▲ ")+fmt(d2)}</div></div>
     </div>
-    <div class="sc-saving">
-      <div><div class="sl">削減額（初年度→改善後）</div><div class="sv">${fmt(Math.abs(diff))}</div></div>
-      <div class="sp">削減率 ${pct}%</div>
-    </div>
-
-    <table style="margin-top:20px;">
-      <thead>
-        <tr>
-          <th>項目</th>
-          <th class="r">初年度</th>
-          <th class="r">2年目</th>
-          <th class="r">3年目</th>
-          <th class="r">改善後</th>
-        </tr>
-      </thead>
+    <table>
+      <thead><tr>
+        <th style="text-align:left;">項目</th>
+        <th>1回目</th><th>2回目</th><th>3回目</th>
+        <th>改善額①<br>1→2回目</th>
+        <th>改善額②<br>2→3回目</th>
+      </tr></thead>
       <tbody>${tableRows}</tbody>
     </table>
     <div class="sc-footer">東北コピー販売株式会社　TEL: 024-559-0245　〒960-8252 福島市御山一本松13-5</div>
   `;
 
   const el = document.getElementById("summary-canvas");
-  el.style.left = "-9999px";
   el.style.display = "block";
 
   html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
     const link = document.createElement("a");
-    const company = p.companyName ? p.companyName.replace(/\s/g, "_") : "控え";
+    const company = (p.companyName || "控え").replace(/\s/g, "_");
     link.download = `ランニングコスト診断_${company}_${new Date().toLocaleDateString("ja-JP").replace(/\//g,"-")}.jpg`;
     link.href = canvas.toDataURL("image/jpeg", 0.95);
     link.click();
