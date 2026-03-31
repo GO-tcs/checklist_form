@@ -7,7 +7,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; background: #f4f6f9; color: #222; font-size: 14px; }
-  .page-wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 60px; }
+  .page-wrap { max-width: 1000px; margin: 0 auto; padding: 24px 16px 60px; }
 
   .page-header { background: #1e3a6e; color: #fff; border-radius: 10px; padding: 20px 24px; margin-bottom: 24px; }
   .page-header .logo { font-size: 11px; opacity: 0.7; margin-bottom: 4px; letter-spacing: 1px; }
@@ -25,27 +25,29 @@
   .section-header.closed .toggle { transform: rotate(-90deg); }
   .section-body.hidden { display: none; }
 
-  /* 6列グリッド: ラベル / 1回目 / 2回目 / 3回目 / 改善額①/ 改善額② */
-  .col-headers { display: grid; grid-template-columns: 2fr 0.8fr 0.8fr 0.8fr 0.9fr 0.9fr; gap: 4px; padding: 8px 18px; background: #f0f3f8; border-bottom: 1px solid #dde1e9; }
-  .col-h { font-size: 10px; color: #666; text-align: right; font-weight: 600; line-height: 1.3; }
-  .col-h:first-child { text-align: left; }
-  .col-h.kaizen { color: #0f6e56; }
+  /* 列: ラベル / 1回目 / 2回目 / 改善額① / 3回目 / 改善額② */
+  .grid6 { display: grid; grid-template-columns: 2fr 0.85fr 0.85fr 1fr 0.85fr 1fr; gap: 4px; }
 
-  .item-row { display: grid; grid-template-columns: 2fr 0.8fr 0.8fr 0.8fr 0.9fr 0.9fr; gap: 4px; padding: 6px 18px; border-bottom: 1px solid #eef0f5; align-items: center; }
-  .item-row label { font-size: 11px; color: #333; line-height: 1.4; }
+  .col-headers { padding: 8px 18px; background: #f0f3f8; border-bottom: 1px solid #dde1e9; }
+  .col-h { font-size: 10px; color: #666; text-align: right; font-weight: 600; line-height: 1.4; }
+  .col-h:first-child { text-align: left; }
+  .col-h.k { color: #0f6e56; }
+
+  .item-row { padding: 6px 18px; border-bottom: 1px solid #eef0f5; align-items: center; }
+  .item-row label { font-size: 11px; color: #333; line-height: 1.4; display: flex; align-items: center; }
   .item-row input[type="number"] {
     width: 100%; border: 1px solid #cdd2db; border-radius: 5px; padding: 4px 6px;
     font-size: 11px; text-align: right; background: #fff; color: #222; height: 28px;
   }
   .item-row input[type="number"]:focus { outline: none; border-color: #1e3a6e; }
-  .item-row .kaizen-val {
+  .kaizen-val {
     font-size: 11px; text-align: right; padding: 4px 6px; height: 28px;
     display: flex; align-items: center; justify-content: flex-end;
     border-radius: 5px; font-weight: 600;
   }
-  .kaizen-val.down { color: #0f6e56; background: #eaf3de; }
-  .kaizen-val.up   { color: #c0392b; background: #fdecea; }
-  .kaizen-val.zero { color: #888;    background: #f5f5f5; }
+  .kv-down { color: #0f6e56; background: #eaf3de; }
+  .kv-up   { color: #c0392b; background: #fdecea; }
+  .kv-zero { color: #aaa;    background: #f5f5f5; }
 
   .note-row { padding: 8px 18px 12px; }
   .note-row textarea {
@@ -54,15 +56,17 @@
     min-height: 38px; font-family: inherit;
   }
 
-  /* 合計カード */
+  /* 合計 */
   .totals-card { background: #fff; border-radius: 10px; border: 1px solid #dde1e9; padding: 20px 24px; margin-top: 6px; }
-  .totals-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 14px; }
-  .total-cell { background: #f0f3f8; border-radius: 8px; padding: 10px; text-align: center; }
-  .total-cell .t-label { font-size: 10px; color: #666; margin-bottom: 4px; line-height: 1.3; }
-  .total-cell .t-val { font-size: 16px; font-weight: 700; color: #1e3a6e; }
-  .total-cell.kaizen .t-val { color: #0f6e56; }
-  .total-cell.kaizen-up .t-val { color: #c0392b; }
+  .totals-grid { display: grid; grid-template-columns: 2fr 0.85fr 0.85fr 1fr 0.85fr 1fr; gap: 8px; align-items: center; padding: 0 0 4px; }
+  .tg-label { font-size: 12px; font-weight: 600; color: #1e3a6e; }
+  .total-cell { background: #f0f3f8; border-radius: 8px; padding: 10px 8px; text-align: center; }
+  .total-cell .tl { font-size: 10px; color: #666; margin-bottom: 3px; line-height: 1.3; }
+  .total-cell .tv { font-size: 15px; font-weight: 700; color: #1e3a6e; }
+  .total-cell.k .tv { color: #0f6e56; }
+  .total-cell.ku .tv { color: #c0392b; }
 
+  /* 送信 */
   .submit-area { margin-top: 20px; text-align: center; }
   .submit-area p { font-size: 12px; color: #888; margin-bottom: 10px; }
   .btn-submit {
@@ -72,7 +76,6 @@
   }
   .btn-submit:hover { background: #162d56; }
   .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
-
   .result-area { display: none; margin-top: 24px; background: #fff; border-radius: 10px; border: 1px solid #dde1e9; padding: 24px; text-align: center; }
   .result-area .success-msg { font-size: 16px; font-weight: 600; color: #0f6e56; margin-bottom: 6px; }
   .result-area .success-sub { font-size: 12px; color: #888; margin-bottom: 20px; }
@@ -84,24 +87,23 @@
   .btn-download:hover { background: #0a5240; }
   .msg-error { margin-top: 14px; color: #c0392b; font-size: 13px; display: none; }
 
-  /* JPEG用サマリー */
+  /* JPEG用 */
   #summary-canvas {
     position: fixed; left: -9999px; top: 0; display: none;
-    width: 900px; background: #fff; padding: 40px;
+    width: 940px; background: #fff; padding: 40px;
     font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
   }
   #summary-canvas .sc-header { background: #1e3a6e; color: #fff; padding: 20px 24px; border-radius: 8px; margin-bottom: 20px; }
   #summary-canvas .sc-header .sc-logo { font-size: 11px; opacity: 0.7; margin-bottom: 4px; }
   #summary-canvas .sc-header h2 { font-size: 18px; font-weight: 600; }
-  #summary-canvas .sc-header .sc-company { font-size: 13px; opacity: 0.9; margin-top: 4px; }
-  #summary-canvas .sc-header .sc-date { font-size: 11px; opacity: 0.7; margin-top: 2px; }
-  #summary-canvas .sc-totals { display: flex; gap: 10px; margin-bottom: 16px; }
-  #summary-canvas .sc-total-cell { flex: 1; background: #f0f3f8; border-radius: 8px; padding: 12px; text-align: center; }
-  #summary-canvas .sc-total-cell .tl { font-size: 10px; color: #666; margin-bottom: 4px; line-height: 1.3; }
-  #summary-canvas .sc-total-cell .tv { font-size: 16px; font-weight: 700; color: #1e3a6e; }
-  #summary-canvas .sc-total-cell.k .tv { color: #0f6e56; }
+  #summary-canvas .sc-header .sc-meta { font-size: 12px; opacity: 0.85; margin-top: 4px; }
+  #summary-canvas .sc-totals { display: flex; gap: 8px; margin-bottom: 20px; }
+  #summary-canvas .sc-tc { flex: 1; background: #f0f3f8; border-radius: 8px; padding: 10px; text-align: center; }
+  #summary-canvas .sc-tc .tl { font-size: 10px; color: #666; margin-bottom: 3px; line-height: 1.3; }
+  #summary-canvas .sc-tc .tv { font-size: 15px; font-weight: 700; color: #1e3a6e; }
+  #summary-canvas .sc-tc.k .tv { color: #0f6e56; }
   #summary-canvas table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  #summary-canvas table th { background: #1e3a6e; color: #fff; padding: 7px 8px; text-align: right; font-weight: 600; }
+  #summary-canvas table th { background: #1e3a6e; color: #fff; padding: 7px 8px; text-align: right; font-weight: 600; white-space: nowrap; }
   #summary-canvas table th:first-child { text-align: left; }
   #summary-canvas table td { padding: 5px 8px; border-bottom: 1px solid #eef0f5; text-align: right; }
   #summary-canvas table td:first-child { text-align: left; }
@@ -110,9 +112,11 @@
   #summary-canvas table td.ku { color: #c0392b; font-weight: 600; }
   #summary-canvas .sc-footer { margin-top: 20px; font-size: 11px; color: #aaa; text-align: center; }
 
-  @media (max-width: 640px) {
-    .col-headers, .item-row { grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr; font-size: 10px; padding: 5px 10px; }
+  @media (max-width: 680px) {
+    .grid6 { grid-template-columns: 1.4fr 0.8fr 0.8fr 0.9fr 0.8fr 0.9fr; }
+    .col-h, .item-row label, .item-row input { font-size: 10px; }
     .totals-grid { grid-template-columns: repeat(3, 1fr); }
+    .tg-label { display: none; }
   }
 </style>
 </head>
@@ -122,7 +126,7 @@
   <div class="page-header">
     <div class="logo">TOHOKU COPY SALE</div>
     <h1>ランニングコスト診断チェックリスト</h1>
-    <p>各項目に金額を入力してください。改善額は自動で計算されます。</p>
+    <p>1回目・2回目・3回目の金額を入力してください。改善額は自動で計算されます。</p>
   </div>
 
   <div class="company-field">
@@ -132,13 +136,15 @@
 
   <div id="sections"></div>
 
+  <!-- 合計 -->
   <div class="totals-card">
-    <div class="totals-grid">
-      <div class="total-cell"><div class="t-label">1回目 合計</div><div class="t-val" id="tot0">¥0</div></div>
-      <div class="total-cell"><div class="t-label">2回目 合計</div><div class="t-val" id="tot1">¥0</div></div>
-      <div class="total-cell"><div class="t-label">3回目 合計</div><div class="t-val" id="tot2">¥0</div></div>
-      <div class="total-cell kaizen"><div class="t-label">改善額①<br>1回目→2回目</div><div class="t-val" id="tot3">¥0</div></div>
-      <div class="total-cell kaizen"><div class="t-label">改善額②<br>2回目→3回目</div><div class="t-val" id="tot4">¥0</div></div>
+    <div class="totals-grid grid6">
+      <div class="tg-label">合計</div>
+      <div class="total-cell"><div class="tl">1回目</div><div class="tv" id="tot0">¥0</div></div>
+      <div class="total-cell"><div class="tl">2回目</div><div class="tv" id="tot1">¥0</div></div>
+      <div class="total-cell k"><div class="tl">改善額①<br>1→2回目</div><div class="tv" id="tot_k1">—</div></div>
+      <div class="total-cell"><div class="tl">3回目</div><div class="tv" id="tot2">¥0</div></div>
+      <div class="total-cell k"><div class="tl">改善額②<br>2→3回目</div><div class="tv" id="tot_k2">—</div></div>
     </div>
   </div>
 
@@ -173,22 +179,19 @@ const SECTIONS = [
   { name: "その他",   items: ["配送料・運送費","倉庫保管料","梱包材費","保険関連"] },
   { name: "消耗品",   items: ["名刺","封筒","事務用品全般"] }
 ];
-const INPUT_COLS = ["1回目","2回目","3回目"];
 
-// セクション生成
 const container = document.getElementById("sections");
 SECTIONS.forEach((sec, si) => {
   const div = document.createElement("div");
   div.className = "section";
-  const rowsHtml = sec.items.map((item, ri) =>
-    `<div class="item-row" id="row_${si}_${ri}">
+  const rowsHtml = sec.items.map((item, ri) => `
+    <div class="item-row grid6" id="row_${si}_${ri}">
       <label>${item}</label>
-      ${INPUT_COLS.map((col, ci) =>
-        `<input type="number" id="inp_${si}_${ri}_${ci}" min="0" step="100"
-          placeholder="0" oninput="recalc()" />`
-      ).join("")}
-      <div class="kaizen-val zero" id="k1_${si}_${ri}">—</div>
-      <div class="kaizen-val zero" id="k2_${si}_${ri}">—</div>
+      <input type="number" id="inp_${si}_${ri}_0" min="0" step="100" placeholder="0" oninput="recalc()" />
+      <input type="number" id="inp_${si}_${ri}_1" min="0" step="100" placeholder="0" oninput="recalc()" />
+      <div class="kaizen-val kv-zero" id="k1_${si}_${ri}">—</div>
+      <input type="number" id="inp_${si}_${ri}_2" min="0" step="100" placeholder="0" oninput="recalc()" />
+      <div class="kaizen-val kv-zero" id="k2_${si}_${ri}">—</div>
     </div>`
   ).join("");
   div.innerHTML = `
@@ -196,13 +199,13 @@ SECTIONS.forEach((sec, si) => {
       <span>${sec.name}</span><span class="toggle">▼</span>
     </div>
     <div class="section-body">
-      <div class="col-headers">
+      <div class="col-headers grid6">
         <div class="col-h">項目</div>
         <div class="col-h">1回目</div>
         <div class="col-h">2回目</div>
+        <div class="col-h k">改善額①<br>1→2回目</div>
         <div class="col-h">3回目</div>
-        <div class="col-h kaizen">改善額①<br>1→2回目</div>
-        <div class="col-h kaizen">改善額②<br>2→3回目</div>
+        <div class="col-h k">改善額②<br>2→3回目</div>
       </div>
       ${rowsHtml}
       <div class="note-row"><textarea id="note_${si}" placeholder="備考"></textarea></div>
@@ -210,23 +213,23 @@ SECTIONS.forEach((sec, si) => {
   container.appendChild(div);
 });
 
-function toggleSec(header) {
-  header.nextElementSibling.classList.toggle("hidden");
-  header.classList.toggle("closed");
+function toggleSec(h) {
+  h.nextElementSibling.classList.toggle("hidden");
+  h.classList.toggle("closed");
 }
 
 function fmt(n) { return "¥" + Math.round(Math.abs(n)).toLocaleString("ja-JP"); }
 
-function fmtDiff(d, el) {
-  if (d === 0) {
+function setKaizenCell(el, diff) {
+  if (diff === 0) {
     el.textContent = "—";
-    el.className = "kaizen-val zero";
-  } else if (d > 0) {
-    el.textContent = "▼ " + fmt(d);
-    el.className = "kaizen-val down";
+    el.className = "kaizen-val kv-zero";
+  } else if (diff > 0) {
+    el.textContent = "▼ " + fmt(diff);
+    el.className = "kaizen-val kv-down";
   } else {
-    el.textContent = "▲ " + fmt(d);
-    el.className = "kaizen-val up";
+    el.textContent = "▲ " + fmt(diff);
+    el.className = "kaizen-val kv-up";
   }
 }
 
@@ -234,30 +237,58 @@ function recalc() {
   const totals = [0, 0, 0];
   SECTIONS.forEach((sec, si) => {
     sec.items.forEach((_, ri) => {
-      const v = INPUT_COLS.map((_, ci) =>
-        parseFloat(document.getElementById(`inp_${si}_${ri}_${ci}`)?.value) || 0
-      );
+      const raw = [0,1,2].map(ci => document.getElementById(`inp_${si}_${ri}_${ci}`)?.value);
+      const v = raw.map(r => parseFloat(r) || 0);
       totals[0] += v[0];
       totals[1] += v[1];
       totals[2] += v[2];
-
-      const d1 = v[0] - v[1];
-      const d2 = v[1] - v[2];
-      fmtDiff(d1, document.getElementById(`k1_${si}_${ri}`));
-      fmtDiff(d2, document.getElementById(`k2_${si}_${ri}`));
+      // 2回目が未入力なら改善額①は表示しない
+      if (raw[1] === "" || raw[1] === null || raw[1] === undefined) {
+        const el = document.getElementById(`k1_${si}_${ri}`);
+        el.textContent = "—"; el.className = "kaizen-val kv-zero";
+      } else {
+        setKaizenCell(document.getElementById(`k1_${si}_${ri}`), v[0] - v[1]);
+      }
+      // 3回目が未入力なら改善額②は表示しない
+      // 改善額② = 改善額①（1回目-2回目） - 3回目
+      const kaizen1 = v[0] - v[1];
+      if (raw[2] === "" || raw[2] === null || raw[2] === undefined) {
+        const el = document.getElementById(`k2_${si}_${ri}`);
+        el.textContent = "—"; el.className = "kaizen-val kv-zero";
+      } else {
+        setKaizenCell(document.getElementById(`k2_${si}_${ri}`), kaizen1 - v[2]);
+      }
     });
   });
 
   for(let i=0;i<3;i++) document.getElementById(`tot${i}`).textContent = fmt(totals[i]);
-  const diff1 = totals[0] - totals[1];
-  const diff2 = totals[1] - totals[2];
 
-  const t3 = document.getElementById("tot3");
-  const t4 = document.getElementById("tot4");
-  t3.textContent = (diff1 >= 0 ? "▼ " : "▲ ") + fmt(diff1);
-  t3.style.color = diff1 >= 0 ? "#0f6e56" : "#c0392b";
-  t4.textContent = (diff2 >= 0 ? "▼ " : "▲ ") + fmt(diff2);
-  t4.style.color = diff2 >= 0 ? "#0f6e56" : "#c0392b";
+  const d1 = totals[0] - totals[1];
+  const d2 = d1 - totals[2];  // 改善額② = 改善額① - 3回目
+  const tk1 = document.getElementById("tot_k1");
+  const tk2 = document.getElementById("tot_k2");
+
+  // 2回目に1つでも入力があれば改善額①を表示
+  const any2 = SECTIONS.some((sec, si) =>
+    sec.items.some((_, ri) => (document.getElementById(`inp_${si}_${ri}_1`)?.value || "") !== "")
+  );
+  if (any2) {
+    tk1.textContent = (d1 > 0 ? "▼ " : d1 < 0 ? "▲ " : "") + (d1 !== 0 ? fmt(d1) : "—");
+    tk1.style.color  = d1 > 0 ? "#0f6e56" : d1 < 0 ? "#c0392b" : "#1e3a6e";
+  } else {
+    tk1.textContent = "—"; tk1.style.color = "#1e3a6e";
+  }
+
+  // 3回目に1つでも入力があれば改善額②を表示
+  const any3 = SECTIONS.some((sec, si) =>
+    sec.items.some((_, ri) => (document.getElementById(`inp_${si}_${ri}_2`)?.value || "") !== "")
+  );
+  if (any3) {
+    tk2.textContent = (d2 > 0 ? "▼ " : d2 < 0 ? "▲ " : "") + (d2 !== 0 ? fmt(d2) : "—");
+    tk2.style.color  = d2 > 0 ? "#0f6e56" : d2 < 0 ? "#c0392b" : "#1e3a6e";
+  } else {
+    tk2.textContent = "—"; tk2.style.color = "#1e3a6e";
+  }
 }
 
 function collectData() {
@@ -266,12 +297,9 @@ function collectData() {
   SECTIONS.forEach((sec, si) => {
     sections[sec.name] = {};
     sec.items.forEach((item, ri) => {
-      sections[sec.name][item] = {};
-      INPUT_COLS.forEach((col, ci) => {
-        const v = parseFloat(document.getElementById(`inp_${si}_${ri}_${ci}`)?.value) || 0;
-        sections[sec.name][item][col] = v;
-        totals[ci] += v;
-      });
+      const v = [0,1,2].map(ci => parseFloat(document.getElementById(`inp_${si}_${ri}_${ci}`)?.value) || 0);
+      sections[sec.name][item] = { "1回目": v[0], "2回目": v[1], "3回目": v[2] };
+      totals[0] += v[0]; totals[1] += v[1]; totals[2] += v[2];
     });
     sections[sec.name]["備考"] = document.getElementById(`note_${si}`)?.value || "";
   });
@@ -283,7 +311,7 @@ function collectData() {
       "2回目": totals[1],
       "3回目": totals[2],
       "改善額①(1→2回目)": totals[0] - totals[1],
-      "改善額②(2→3回目)": totals[1] - totals[2]
+      "改善額②(改善額①-3回目)": (totals[0] - totals[1]) - totals[2]
     }
   };
 }
@@ -325,59 +353,60 @@ function downloadJpeg() {
   const t = p.totals;
   const now = new Date().toLocaleString("ja-JP");
   const d1 = t["改善額①(1→2回目)"];
-  const d2 = t["改善額②(2→3回目)"];
+  const d2 = t["改善額②(改善額①-3回目)"];
 
-  let tableRows = "";
+  const fmtD = d => d === 0 ? "—" : (d > 0 ? "▼ " : "▲ ") + fmt(d);
+  const cls  = d => d > 0 ? "kd" : d < 0 ? "ku" : "";
+
+  let rows = "";
   SECTIONS.forEach(sec => {
-    tableRows += `<tr class="sec-hd"><td colspan="6">${sec.name}</td></tr>`;
+    rows += `<tr class="sec-hd"><td colspan="6">${sec.name}</td></tr>`;
     sec.items.forEach(item => {
       const d = p.sections[sec.name]?.[item] || {};
-      const v = INPUT_COLS.map(c => d[c] || 0);
+      const v = [d["1回目"]||0, d["2回目"]||0, d["3回目"]||0];
       if (!v.some(x => x > 0)) return;
-      const diff1 = v[0] - v[1];
-      const diff2 = v[1] - v[2];
-      const cls1 = diff1 > 0 ? "kd" : diff1 < 0 ? "ku" : "";
-      const cls2 = diff2 > 0 ? "kd" : diff2 < 0 ? "ku" : "";
-      tableRows += `<tr>
+      const dd1 = v[0]-v[1], dd2 = (v[0]-v[1])-v[2];
+      rows += `<tr>
         <td style="padding-left:14px;">${item}</td>
-        ${v.map(x => `<td>${x > 0 ? fmt(x) : "—"}</td>`).join("")}
-        <td class="${cls1}">${diff1 !== 0 ? (diff1>0?"▼ ":"▲ ")+fmt(diff1) : "—"}</td>
-        <td class="${cls2}">${diff2 !== 0 ? (diff2>0?"▼ ":"▲ ")+fmt(diff2) : "—"}</td>
+        <td>${v[0]>0?fmt(v[0]):"—"}</td>
+        <td>${v[1]>0?fmt(v[1]):"—"}</td>
+        <td class="${cls(dd1)}">${fmtD(dd1)}</td>
+        <td>${v[2]>0?fmt(v[2]):"—"}</td>
+        <td class="${cls(dd2)}">${fmtD(dd2)}</td>
       </tr>`;
     });
     const note = p.sections[sec.name]?.["備考"];
-    if (note) tableRows += `<tr><td colspan="6" style="font-size:10px;color:#888;padding-left:14px;">備考：${note}</td></tr>`;
+    if (note) rows += `<tr><td colspan="6" style="font-size:10px;color:#888;padding-left:14px;">備考：${note}</td></tr>`;
   });
 
   document.getElementById("summary-canvas").innerHTML = `
     <div class="sc-header">
       <div class="sc-logo">TOHOKU COPY SALE</div>
       <h2>ランニングコスト診断 お客様控え</h2>
-      <div class="sc-company">${p.companyName || "（会社名未入力）"}</div>
-      <div class="sc-date">送信日時：${now}</div>
+      <div class="sc-meta">${p.companyName || "（会社名未入力）"}　送信日時：${now}</div>
     </div>
     <div class="sc-totals">
-      <div class="sc-total-cell"><div class="tl">1回目</div><div class="tv">${fmt(t["1回目"])}</div></div>
-      <div class="sc-total-cell"><div class="tl">2回目</div><div class="tv">${fmt(t["2回目"])}</div></div>
-      <div class="sc-total-cell"><div class="tl">3回目</div><div class="tv">${fmt(t["3回目"])}</div></div>
-      <div class="sc-total-cell k"><div class="tl">改善額①<br>1→2回目</div><div class="tv">${(d1>=0?"▼ ":"▲ ")+fmt(d1)}</div></div>
-      <div class="sc-total-cell k"><div class="tl">改善額②<br>2→3回目</div><div class="tv">${(d2>=0?"▼ ":"▲ ")+fmt(d2)}</div></div>
+      <div class="sc-tc"><div class="tl">1回目</div><div class="tv">${fmt(t["1回目"])}</div></div>
+      <div class="sc-tc"><div class="tl">2回目</div><div class="tv">${fmt(t["2回目"])}</div></div>
+      <div class="sc-tc k"><div class="tl">改善額①<br>1→2回目</div><div class="tv">${fmtD(d1)}</div></div>
+      <div class="sc-tc"><div class="tl">3回目</div><div class="tv">${fmt(t["3回目"])}</div></div>
+      <div class="sc-tc k"><div class="tl">改善額②<br>2→3回目</div><div class="tv">${fmtD(d2)}</div></div>
     </div>
     <table>
       <thead><tr>
         <th style="text-align:left;">項目</th>
-        <th>1回目</th><th>2回目</th><th>3回目</th>
+        <th>1回目</th><th>2回目</th>
         <th>改善額①<br>1→2回目</th>
+        <th>3回目</th>
         <th>改善額②<br>2→3回目</th>
       </tr></thead>
-      <tbody>${tableRows}</tbody>
+      <tbody>${rows}</tbody>
     </table>
     <div class="sc-footer">東北コピー販売株式会社　TEL: 024-559-0245　〒960-8252 福島市御山一本松13-5</div>
   `;
 
   const el = document.getElementById("summary-canvas");
   el.style.display = "block";
-
   html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
     const link = document.createElement("a");
     const company = (p.companyName || "控え").replace(/\s/g, "_");
