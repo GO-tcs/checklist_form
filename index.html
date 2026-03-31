@@ -164,10 +164,10 @@
 
 <div id="summary-canvas"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://script.google.com/macros/s/AKfycbwRXYNssLUHrC9CVi1VOwHaKMdBnoWjXaLL6EVVrfqi72_rLSXkMM_U5sRZBo393aAjQg/exec"></script>
 <script>
 // =============================================
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwRXYNssLUHrC9CVi1VOwHaKMdBnoWjXaLL6EVVrfqi72_rLSXkMM_U5sRZBo393aAjQg/exec";
+const GAS_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
 // =============================================
 
 const SECTIONS = [
@@ -250,13 +250,12 @@ function recalc() {
         setKaizenCell(document.getElementById(`k1_${si}_${ri}`), v[0] - v[1]);
       }
       // 3回目が未入力なら改善額②は表示しない
-      // 改善額② = 改善額①（1回目-2回目） - 3回目
-      const kaizen1 = v[0] - v[1];
+      // 改善額② = 2回目 - 3回目
       if (raw[2] === "" || raw[2] === null || raw[2] === undefined) {
         const el = document.getElementById(`k2_${si}_${ri}`);
         el.textContent = "—"; el.className = "kaizen-val kv-zero";
       } else {
-        setKaizenCell(document.getElementById(`k2_${si}_${ri}`), kaizen1 - v[2]);
+        setKaizenCell(document.getElementById(`k2_${si}_${ri}`), v[1] - v[2]);
       }
     });
   });
@@ -264,7 +263,7 @@ function recalc() {
   for(let i=0;i<3;i++) document.getElementById(`tot${i}`).textContent = fmt(totals[i]);
 
   const d1 = totals[0] - totals[1];
-  const d2 = d1 - totals[2];  // 改善額② = 改善額① - 3回目
+  const d2 = totals[1] - totals[2];  // 改善額② = 2回目 - 3回目
   const tk1 = document.getElementById("tot_k1");
   const tk2 = document.getElementById("tot_k2");
 
@@ -311,7 +310,7 @@ function collectData() {
       "2回目": totals[1],
       "3回目": totals[2],
       "改善額①(1→2回目)": totals[0] - totals[1],
-      "改善額②(改善額①-3回目)": (totals[0] - totals[1]) - totals[2]
+      "改善額②(2→3回目)": totals[1] - totals[2]
     }
   };
 }
@@ -353,7 +352,7 @@ function downloadJpeg() {
   const t = p.totals;
   const now = new Date().toLocaleString("ja-JP");
   const d1 = t["改善額①(1→2回目)"];
-  const d2 = t["改善額②(改善額①-3回目)"];
+  const d2 = t["改善額②(2→3回目)"];
 
   const fmtD = d => d === 0 ? "—" : (d > 0 ? "▼ " : "▲ ") + fmt(d);
   const cls  = d => d > 0 ? "kd" : d < 0 ? "ku" : "";
@@ -365,7 +364,7 @@ function downloadJpeg() {
       const d = p.sections[sec.name]?.[item] || {};
       const v = [d["1回目"]||0, d["2回目"]||0, d["3回目"]||0];
       if (!v.some(x => x > 0)) return;
-      const dd1 = v[0]-v[1], dd2 = (v[0]-v[1])-v[2];
+      const dd1 = v[0]-v[1], dd2 = v[1]-v[2];
       rows += `<tr>
         <td style="padding-left:14px;">${item}</td>
         <td>${v[0]>0?fmt(v[0]):"—"}</td>
